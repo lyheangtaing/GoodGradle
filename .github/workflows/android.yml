@@ -1,0 +1,42 @@
+name: Android quality
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
+        with:
+          cmdline-tools-version: '15859902'
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-37.0" "build-tools;36.0.0" "ndk;30.0.16248370"
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
+      - name: Validate and build
+        run: bash ./gradlew productionCheck :app:assembleBenchmark --stacktrace --console=plain
+      - name: Confirm configuration cache reuse
+        shell: bash
+        run: |
+          bash ./gradlew productionCheck :app:assembleBenchmark --stacktrace --console=plain | tee build/configuration-cache.log
+          grep -Fq 'Reusing configuration cache.' build/configuration-cache.log
+
+# Device tests are compiled here. Run connectedDebugAndroidTest on an attached
+# device/emulator before release. This workflow does not publish artifacts.
