@@ -18,7 +18,7 @@ metadata. Stable versions are pinned in `gradle/libs.versions.toml`.
 | Component | Version | Reason |
 | --- | --- | --- |
 | Android Gradle Plugin | 9.4.1 | Latest stable patch verified in Google Maven |
-| Gradle wrapper | 9.8.0 | Above AGP 9.4's 9.6.0 minimum; matching official distribution SHA-256 pinned |
+| Gradle wrapper | 9.8.1 | Above AGP 9.4's 9.6.0 minimum; matching official distribution SHA-256 pinned |
 | Build JVM / Java & Kotlin bytecode | 17 | AGP's supported baseline; use a patched JDK 17 |
 | Kotlin / Compose compiler | 2.4.20 | Same version for both; explicitly upgrades AGP's built-in Kotlin |
 | Compile / target SDK | 37 | Android 17; exercise its behavior changes before release |
